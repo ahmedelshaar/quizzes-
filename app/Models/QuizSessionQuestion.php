@@ -13,4 +13,6 @@ class QuizSessionQuestion extends Model
     protected $casts = [
         'answer' => 'object',
     ];
+
+    public $timestamps = false;
 }

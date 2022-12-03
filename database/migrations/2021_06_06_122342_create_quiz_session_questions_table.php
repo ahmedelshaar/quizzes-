@@ -17,7 +17,7 @@ class CreateQuizSessionQuestionsTable extends Migration
             $table->unsignedBigInteger('quiz_session_id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('question_id');
-            $table->json('answer');
+            $table->json('answer')->nullable();
             $table->boolean('is_correct')->nullable();
 
             $table->primary(['quiz_session_id', 'question_id'], 'quiz_session_questions_primary');

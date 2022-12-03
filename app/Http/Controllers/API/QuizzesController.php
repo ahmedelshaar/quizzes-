@@ -3,16 +3,18 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\API\SaveAnswerRequest;
 use App\Models\Quiz;
+use App\Models\QuizQuestion;
 use App\Models\QuizSchedule;
 use App\Models\QuizSession;
+use App\Models\QuizSessionQuestion;
 use App\Models\UserGroupUser;
 use App\Transformers\API\GetQuizQuestionAnswerTransformer;
 use App\Transformers\API\GetQuizQuestionTransformer;
 use App\Transformers\API\QuizActiveTransformer;
 use App\Transformers\API\QuizAttendTransformer;
-use App\Transformers\API\RankTransformer;
-use Illuminate\Http\Request;
+use App\Transformers\API\QuizInActiveTransformer;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -52,7 +54,7 @@ class QuizzesController extends Controller
                     'message' => 'ليس لديك اي تكليفات لم تقوم بالدخول إليها'
                 ]);
             }
-            return fractal($quizSchedules, new RankTransformer())->toArray()['data'];
+            return fractal($quizSchedules, new QuizInActiveTransformer())->toArray()['data'];
         }
         return response([
             'message' => 'انت لست في اي مجموعة'
@@ -165,7 +167,7 @@ class QuizzesController extends Controller
                 if($quiz_attend->sessions->ends_at){
                     $questions_with_answer = QuizSession::where('quiz_schedules_id', $quiz_attend->id)
                     ->where('user_id', auth()->user()->id)
-                    ->with(['quiz' => function ($quiz) use($quiz_attend) {
+                    ->with(['quiz' => function ($quiz) use ($quiz_attend) {
                         return $quiz->with([
                             'questions' => function ($question) use($quiz_attend) {
                                 return $question->with([
@@ -222,10 +224,96 @@ class QuizzesController extends Controller
         ]);
     }
 
-    public function saveAnswer(){
+    public function saveAnswer(SaveAnswerRequest $request){
+        $user_id = auth()->user()->id;
+        $quiz_session = QuizSession::where('quiz_schedules_id', $request->quiz_schedules_id)
+            ->where('quiz_id', $request->quiz_id)
+            ->where('user_id', $user_id)
+            ->whereNull('ends_at')
+            ->first();
 
+        if($quiz_session) {
+            $quiz_attend = QuizSchedule::where('id', $quiz_session->quiz_schedules_id)->first();
+            $end = new Carbon($quiz_attend->end);
+            $end_time = $end->diffInMinutes(Carbon::now());
+
+            if ($end->isBefore(Carbon::now())) {
+                $end_time *= -1;
+            }
+            $time_quiz = $quiz_attend->time;
+            $remaining_time = 0;
+            if ($time_quiz <= $end_time) {
+                $remaining_time = $time_quiz;
+            } else {
+                $remaining_time = $end_time;
+            }
+
+            if ($remaining_time < -5) {
+                $quiz_session->update([
+                    'ends_at' => Carbon::now(),
+                    "result" => 0,
+                    "correct" => 0,
+                    "wrong" => 0,
+                ]);
+                return response([
+                    'message' => "لقد مر الوقت المسموح بيه لحفظ الاجابات"
+                ]);
+            }else{
+                $questions = QuizQuestion::where('quiz_id', $quiz_session->quiz_id)->with('question')->get();
+                $answers = collect($request->questions);
+                foreach ($questions as $question){
+                    $answer = $answers->where('id', $question->question->id)->first();
+                    if($answer){
+                        if($question->question->type == 'Writing'){
+                            QuizSessionQuestion::create([
+                                'quiz_session_id' => $quiz_session->id,
+                                'user_id' => $user_id,
+                                'question_id' => $question->question->id,
+                                'answer' => $answer['answer'],
+                            ]);
+                        }else{
+                            $correct_answer = $question->question->correct_answer;
+                            $student_answer = $answer['answer'];
+                            array_multisort($correct_answer);
+                            array_multisort($student_answer);
+                            QuizSessionQuestion::create([
+                                'quiz_session_id' => $quiz_session->id,
+                                'user_id' => $user_id,
+                                'question_id' => $question->question->id,
+                                'answer' => $answer['answer'],
+                                'is_correct' => $correct_answer == $student_answer ? 1 : 0
+                            ]);
+                        }
+                    }else{
+                        QuizSessionQuestion::create([
+                            'quiz_session_id' => $quiz_session->id,
+                            'user_id' => $user_id,
+                            'question_id' => $question->question->id,
+                            'is_correct' => 0,
+                        ]);
+                    }
+                }
+                // calc result
+                $quiz_session->update([
+                    'ends_at' => Carbon::now(),
+                ]);
+            }
+        }else{
+            $quiz_session = QuizSession::where('quiz_schedules_id', $request->quiz_schedules_id)
+                ->where('quiz_id', $request->quiz_id)
+                ->where('user_id', $user_id)
+                ->first();
+            if($quiz_session){
+                return response([
+                    'message' => "لقد قمت بحفظ الاجابة بالفعل"
+                ]);
+            }else{
+                return response([
+                    'message' => "غير مسموح لك بالدخول"
+                ]);
+            }
+        }
     }
-
 }
 
 
