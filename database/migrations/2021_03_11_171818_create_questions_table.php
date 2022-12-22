@@ -15,8 +15,9 @@ class CreateQuestionsTable extends Migration
     {
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
+            $table->string('year');
             $table->text('question');
-            $table->enum('type', ['MCQ Single Answer', 'MCQ Multi-Answer', 'Writing']);
+            $table->enum('type', ['MCQ Single Answer', 'MCQ Multi-Answer', 'Writing', 'True - False']);
             $table->json('options')->nullable();
             $table->json('correct_answer')->nullable();
             $table->text('hint')->nullable();

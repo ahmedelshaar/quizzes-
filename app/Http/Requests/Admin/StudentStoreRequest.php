@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\API;
+namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UserUpdateRequest extends FormRequest
+class StudentStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,16 +24,14 @@ class UserUpdateRequest extends FormRequest
      */
     public function rules()
     {
-        $user = auth()->user();
         return [
-            'id' => 'required|in:' . $user->id,
             'first_name' => 'required|min:3|alpha',
             'last_name' => 'required|min:3|alpha',
-            'username' => ['required', 'min:3', 'alpha_num', Rule::unique('users')->ignore($user->id)],
-            'mobile' => ['nullable','numeric','digits:11', Rule::unique('users')->ignore($user->id)],
-            'email' => ['required', 'email', 'min:3', Rule::unique('users')->ignore($user->id)],
-            'image' => 'image',
-            'password' => 'confirmed|min:8'
+            'email' => ['required', 'email', 'min:3', 'unique:users'],
+            'username' => ['required', 'min:3', 'alpha_num', 'unique:users'],
+            'mobile' => ['nullable', 'numeric', 'digits:11', 'unique:users'],
+            'password' => 'required|confirmed|min:8',
+            'user_group' => 'nullable|exists:user_groups,id'
         ];
     }
 }

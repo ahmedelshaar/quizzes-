@@ -51,6 +51,14 @@ class User extends Authenticatable
         return "{$this->first_name} {$this->last_name}";
     }
 
+    public function getGroupAttribute()
+    {
+        if(count($this->userGroups) > 0){
+            return $this->userGroups[0]->name;
+        }
+        return 'ليس في مجموعة';
+    }
+
     public function quizSessions()
     {
         return $this->hasMany(QuizSession::class);
