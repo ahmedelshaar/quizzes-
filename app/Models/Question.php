@@ -13,12 +13,15 @@ class Question extends Model
     protected $fillable = [
         'question',
         'type',
+        'year',
         'options',
         'correct_answer',
         'hint',
         'solution',
         'image',
     ];
+
+    public $timestamps = false;
 
     protected $casts = [
         'correct_answer' => 'array',

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\QuestionRequest;
 use App\Models\Question;
 use Illuminate\Http\Request;
 
@@ -37,9 +38,19 @@ class QuestionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(QuestionRequest $request)
     {
-        return $request;
+        if($request->type == 'Writing'){
+            Question::create($request->all());
+        }else if($request->type == 'True - False'){
+            Question::create($request->except('check') + ['correct_answer' => [$request->check]]);
+        }else if($request->type == 'MCQ Single Answer'){
+            Question::create($request->except('answer') + ['correct_answer' => [$request->answer]]);
+        }else{
+            $correct_answer = collect($request->answer)->keys();
+            Question::create($request->except('answer') + ['correct_answer' => $correct_answer]);
+        }
+        return redirect()->route('question.index')->withSuccess('تم اضافة السؤال جديد بنجاح');
     }
 
     /**
