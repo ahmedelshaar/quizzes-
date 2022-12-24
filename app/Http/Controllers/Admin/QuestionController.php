@@ -40,15 +40,21 @@ class QuestionController extends Controller
      */
     public function store(QuestionRequest $request)
     {
+        $filename = null;
+        if($request->has('image')){
+            $filename = time().'.'.request()->image->getClientOriginalExtension();
+            request()->image->move(public_path('images/questions'), $filename);
+            $filename = 'images/questions/' . $filename;
+        }
         if($request->type == 'Writing'){
-            Question::create($request->all());
+            Question::create($request->except('image'), ['image' => $filename]);
         }else if($request->type == 'True - False'){
-            Question::create($request->except('check') + ['correct_answer' => [$request->check]]);
+            Question::create($request->except('check', 'image') + ['correct_answer' => [$request->check], 'image' => $filename]);
         }else if($request->type == 'MCQ Single Answer'){
-            Question::create($request->except('answer') + ['correct_answer' => [$request->answer]]);
+            Question::create($request->except('answer', 'image') + ['correct_answer' => [$request->answer], 'image' => $filename]);
         }else{
             $correct_answer = collect($request->answer)->keys();
-            Question::create($request->except('answer') + ['correct_answer' => $correct_answer]);
+            Question::create($request->except('answer', 'image') + ['correct_answer' => $correct_answer, 'image' => $filename]);
         }
         return redirect()->route('question.index')->withSuccess('تم اضافة السؤال جديد بنجاح');
     }
@@ -61,7 +67,9 @@ class QuestionController extends Controller
      */
     public function show($id)
     {
-        //
+        $question = Question::find($id);
+        return view('admin.question.show', compact('question'))->withTitle('سؤال: ' . $question->question);
+
     }
 
     /**
@@ -72,7 +80,10 @@ class QuestionController extends Controller
      */
     public function edit($id)
     {
-        //
+        $question = Question::find($id);
+        $years = ['سؤال عام', 'سنة اولي', 'سنة تانية', 'سنة تالتة'];
+        $types = ['MCQ Single Answer', 'MCQ Multi-Answer', 'True - False', 'Writing'];
+        return view('admin.question.edit', compact('question', 'years', 'types'))->withTitle('سؤال: ' . $question->question);
     }
 
     /**
@@ -84,7 +95,24 @@ class QuestionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $question = Question::find($id);
+        $filename = $question->image;
+        if($request->has('image')){
+            $filename = time().'.'.request()->image->getClientOriginalExtension();
+            request()->image->move(public_path('images/questions'), $filename);
+            $filename = 'images/questions/' . $filename;
+        }
+        if($request->type == 'Writing'){
+            $question->update($request->except('image'), ['image' => $filename]);
+        }else if($request->type == 'True - False'){
+            $question->update($request->except('check', 'image') + ['correct_answer' => [$request->check], 'image' => $filename]);
+        }else if($request->type == 'MCQ Single Answer'){
+            $question->update($request->except('answer', 'image') + ['correct_answer' => [$request->answer], 'image' => $filename]);
+        }else{
+            $correct_answer = collect($request->answer)->keys();
+            $question->update($request->except('answer', 'image') + ['correct_answer' => $correct_answer, 'image' => $filename]);
+        }
+        return redirect()->back()->withSuccess('تم تحديث السؤال جديد بنجاح');
     }
 
     /**

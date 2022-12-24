@@ -11,6 +11,8 @@ class QuizQuestion extends Model
 
     protected $fillable = ['quiz_id', 'question_id'];
 
+    public $timestamps = false;
+
     public function question(){
         return $this->belongsTo(Question::class);
     }

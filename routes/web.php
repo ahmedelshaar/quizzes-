@@ -34,4 +34,7 @@ Route::group(['prefix' => 'admin'], function (){
 
     Route::post('group/add', [GroupController::class, 'addUserGroup'])->name('addUserGroup');
     Route::post('group/remove', [GroupController::class, 'removeUserGroup'])->name('removeUserGroup');
+
+    Route::post('quiz/add', [QuizController::class, 'addQuestionQuiz'])->name('addQuestionQuiz');
+    Route::post('quiz/remove', [QuizController::class, 'removeQuestionQuiz'])->name('removeQuestionQuiz');
 });

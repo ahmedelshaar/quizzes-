@@ -13,11 +13,14 @@ class QuizSchedule extends Model
 
     protected $guarded = [];
 
-    protected $dateFormat = 'U';
-
     public function quiz()
     {
         return $this->belongsTo(Quiz::class);
+    }
+
+    public function userGroup()
+    {
+        return $this->belongsTo(UserGroup::class);
     }
 
     public function sessions()

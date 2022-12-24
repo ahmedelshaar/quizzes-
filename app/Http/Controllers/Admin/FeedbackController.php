@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Feedback;
 use Illuminate\Http\Request;
 
 class FeedbackController extends Controller
@@ -14,7 +15,8 @@ class FeedbackController extends Controller
      */
     public function index()
     {
-        //
+        $feedbacks = Feedback::with('student', 'question')->get();
+        return view('admin.feedback.index', compact('feedbacks'))->withTitle('الملاحظات');
     }
 
     /**
@@ -80,6 +82,11 @@ class FeedbackController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $group = Feedback::find($id);
+        if($group){
+            $group->delete();
+            return redirect()->back()->withSuccess('تم الحذف بنجاح');
+        }
+        return redirect()->back()->withError('هذا الملاحظة غير موجود');
     }
 }

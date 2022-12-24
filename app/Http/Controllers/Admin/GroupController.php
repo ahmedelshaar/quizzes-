@@ -43,10 +43,10 @@ class GroupController extends Controller
         $request->validate([
             'name' => 'required|min:3',
         ]);
-        UserGroup::create([
+        $userGroup = UserGroup::create([
             'name' => $request->name,
         ]);
-        return redirect()->route('group.index')->withSuccess('تم اضافة المجموعة جديد بنجاح');
+        return redirect()->route('group.show', $userGroup->id)->withSuccess('تم اضافة المجموعة جديدة بنجاح');
 
     }
 
@@ -87,6 +87,9 @@ class GroupController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'name' => 'required|min:3',
+        ]);
         $group = UserGroup::find($id);
         $group->update($request->all());
         return redirect()->back()->withSuccess('تم تحديث البيانات بنجاح');

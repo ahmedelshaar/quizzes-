@@ -38,7 +38,7 @@
     <link type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" rel="stylesheet">
     <link type="text/css" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap4.min.css" rel="stylesheet">
 
-
+    @yield('styles')
 </head>
 
 <body class="layout-default">
