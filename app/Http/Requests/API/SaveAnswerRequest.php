@@ -25,7 +25,6 @@ class SaveAnswerRequest extends FormRequest
     {
         return [
             'quiz_schedules_id' => 'required|exists:quiz_sessions,quiz_schedules_id',
-            'quiz_id' => 'required|exists:quiz_sessions,quiz_id',
             'questions' => 'required|array',
             'questions.*.id' => 'required|exists:questions,id',
             'questions.*.answer' => 'required'

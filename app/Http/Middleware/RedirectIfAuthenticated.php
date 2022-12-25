@@ -23,6 +23,14 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
+                $user = Auth::guard($guard);
+                if($guard == 'admin' || $guard == 'user'){
+                    if($user->hasRole('admin')) {
+                        return redirect(route('admin_dashboard'));
+                    } else if($user->hasRole('user')) {
+                        return redirect(route('dashboard'));
+                    }
+                }
                 return redirect(RouteServiceProvider::HOME);
             }
         }

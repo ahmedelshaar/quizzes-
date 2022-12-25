@@ -18,7 +18,7 @@ class QuestionTransformer extends TransformerAbstract
      */
     public function transform(Question $question)
     {
-        if($question->type == 'Writing'){
+        if($question->type == 'Writing' || $question->type == "True - False"){
             return [
                 'id' => $question->id,
                 "title" => $question->question,

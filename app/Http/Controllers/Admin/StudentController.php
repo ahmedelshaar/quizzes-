@@ -10,6 +10,7 @@ use App\Models\UserGroup;
 use App\Models\UserGroupUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 
 class StudentController extends Controller
 {
@@ -20,7 +21,7 @@ class StudentController extends Controller
      */
     public function index()
     {
-        $students = User::with('userGroups')->get();
+        $students = User::where('role', 'user')->with('userGroups')->get();
         return view('admin.student.index', compact('students'))->withTitle('الطلاب');
     }
 
@@ -51,6 +52,8 @@ class StudentController extends Controller
                 'user_group_id' => $request->user_group
             ]);
         }
+        $token = Password::getRepository()->create($user);
+        $user->sendPasswordResetNotification($token);
         return redirect()->route('student.index')->withSuccess('تم اضافة طالب جديد بنجاح');
     }
 
@@ -94,6 +97,8 @@ class StudentController extends Controller
         }else{
             $password = Hash::make($request->password);
             $user->update($request->except('password') + ["password" => $password]);
+            $token = Password::getRepository()->create($user);
+            $user->sendPasswordResetNotification($token);
         }
         return redirect()->back()->withSuccess('تم تحديث البيانات بنجاح');
     }

@@ -25,7 +25,7 @@ class GetQuizQuestionAnswerTransformer extends TransformerAbstract
             "quiz" => [
                 "title" => $quiz_session->quiz->title,
                 "description" => $quiz_session->quiz->description,
-                "question" => fractal($quiz_session->quiz->questions, new QuestionAnswerTransformer())->toArray()['data']
+                "question" => fractal($quiz_session->questions, new QuestionAnswerTransformer())->toArray()['data']
             ]
         ];
     }

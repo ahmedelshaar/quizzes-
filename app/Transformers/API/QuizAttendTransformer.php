@@ -18,15 +18,16 @@ class QuizAttendTransformer extends TransformerAbstract
     public function transform(QuizSchedule $schedule)
     {
         $status = 'In Correcting';
-        if(Carbon::now()->isAfter($schedule->show_answer_time)){
-            if($schedule->sessions->ends_at){
+        if($schedule->sessions->ends_at == null){
+            $status = 'Continue';
+        }else{
+            if(Carbon::now()->isAfter($schedule->show_answer_time)){
                 $status = 'Show Answer';
-            }else{
-                $status = 'Continue';
             }
         }
+
         return [
-            'id' => $schedule->quiz->id,
+            'id' => $schedule->id,
             'start_at' => $schedule->start,
             'end_at' => $schedule->end,
             'title' => $schedule->quiz->title,

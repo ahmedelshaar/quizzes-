@@ -17,6 +17,14 @@ class CreateQuizSessionQuestionsTable extends Migration
             $table->unsignedBigInteger('quiz_session_id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('question_id');
+            $table->text('question');
+            $table->enum('type', ['MCQ Single Answer', 'MCQ Multi-Answer', 'Writing', 'True - False']);
+            $table->json('options')->nullable();
+            $table->json('correct_answer')->nullable();
+            $table->text('hint')->nullable();
+            $table->text('solution')->nullable();
+            $table->text('image')->nullable();
+
             $table->json('answer')->nullable();
             $table->boolean('is_correct')->nullable();
 

@@ -62,7 +62,7 @@ class GroupController extends Controller
         $students = User::whereHas('userGroups', function ($q) use ($id){
             return $q->where('user_group_id', $id);
         })->get();
-        $studentsNotGroup = User::whereDoesntHave('userGroups')->get();
+        $studentsNotGroup = User::where('role', 'user')->whereDoesntHave('userGroups')->get();
         return view('admin.group.show', compact('group', 'students', 'studentsNotGroup'))->withTitle('بيانات المجموعة: ' . $group->name);
     }
 

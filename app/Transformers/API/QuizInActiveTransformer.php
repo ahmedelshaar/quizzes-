@@ -18,7 +18,7 @@ class QuizInActiveTransformer extends TransformerAbstract
     public function transform(QuizSchedule $schedule)
     {
         return [
-            'id' => $schedule->quiz->id,
+            'id' => $schedule->id,
             'start_at' => $schedule->start,
             'end_at' => $schedule->end,
             'title' => $schedule->quiz->title,

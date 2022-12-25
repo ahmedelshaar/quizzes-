@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
+
     ## Get Quizzes
     Route::get('/quiz/active', [QuizzesController::class, 'activeQuiz']);
     Route::get('/quiz/inactive', [QuizzesController::class, 'inActiveQuiz']);
@@ -28,7 +29,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/quizzes', [QuizzesController::class, 'quizzes']);
 
     ## Save Answer
-    Route::post('/quiz/{id}', [QuizzesController::class, 'saveAnswer']);
+    Route::post('/quiz', [QuizzesController::class, 'saveAnswer']);
+
+
+
+
 
     ## Rank
     Route::get('/rank/site', [RankController::class, 'site']);
@@ -37,7 +42,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     ## feedback
     Route::post('/feedback/create', [FeedbackController::class, 'create']);
-
     ## Student
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/logout', [AuthController::class, 'logout']);

@@ -11,6 +11,8 @@ class QuizSessionQuestion extends Model
     protected $guarded = [];
 
     protected $casts = [
+        'correct_answer' => 'array',
+        'options' => 'object',
         'answer' => 'object',
     ];
 

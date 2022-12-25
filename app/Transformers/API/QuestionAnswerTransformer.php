@@ -4,6 +4,7 @@ namespace App\Transformers\API;
 
 use App\Models\Question;
 use App\Models\Quiz;
+use App\Models\QuizSessionQuestion;
 use Illuminate\Support\Carbon;
 use League\Fractal\TransformerAbstract;
 
@@ -16,9 +17,9 @@ class QuestionAnswerTransformer extends TransformerAbstract
      * @param Question $question
      * @return array
      */
-    public function transform(Question $question)
+    public function transform(QuizSessionQuestion $question)
     {
-        if($question->type == 'Writing'){
+        if($question->type == 'Writing' || $question->type == 'True - False'){
             return [
                 'id' => $question->id,
                 "title" => $question->question,
@@ -27,8 +28,8 @@ class QuestionAnswerTransformer extends TransformerAbstract
                 "image" => $question->image,
                 "correct_answer" =>  $question->correct_answer,
                 "solution" =>  $question->solution,
-                "answer" => $question->answer->answer ?? null,
-                "is_correct" => $question->answer->is_correct ?? null,
+                "answer" => $question->answer,
+                "is_correct" => $question->is_correct,
             ];
         }
         return [
@@ -40,8 +41,8 @@ class QuestionAnswerTransformer extends TransformerAbstract
             "options" => $question->options,
             "correct_answer" =>  $question->correct_answer,
             "solution" =>  $question->solution,
-            "answer" => $question->answer->answer ?? null,
-            'is_correct' => $question->answer->is_correct ?? null
+            "answer" => $question->answer,
+            'is_correct' => $question->is_correct
         ];
     }
 }

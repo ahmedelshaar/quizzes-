@@ -5,7 +5,7 @@
         <div
             class="page__heading d-flex flex-column flex-md-row align-items-center justify-content-center justify-content-lg-between text-center text-lg-left">
             <h1 class="m-lg-0">{{ $title }}</h1>
-            <a href="{{ route('quiz.create') }}" class="btn btn-success ml-lg-3">اضافة مجموعة جديد <i
+            <a href="{{ route('quiz.create') }}" class="btn btn-success ml-lg-3">اضافة كويز جديد <i
                     class="material-icons">add</i></a>
         </div>
         @include('inc.alert.success')
@@ -22,6 +22,7 @@
                     <th>ID</th>
                     <th>اسم المجموعة</th>
                     <th>عدد الاسئلة</th>
+                    <th>عدد الممتحنين</th>
                     <th>إجراء</th>
                 </tr>
                 </thead>
@@ -31,6 +32,7 @@
                         <td>{{$quiz->id}}</td>
                         <td>{{$quiz->title}}</td>
                         <td>{{$quiz->questions_count}}</td>
+                        <td>{{$quiz->sessions_count}}</td>
                         <td>
                             <a href="{{ route('quiz.show', $quiz->id) }}"><button type="button" class="btn btn-primary">عرض</button></a>
                             <a href="{{ route('quiz.edit', $quiz->id) }}"><button type="button" class="btn btn-secondary">تعديل</button></a>

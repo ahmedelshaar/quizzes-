@@ -22,7 +22,7 @@ class QuizActiveTransformer extends TransformerAbstract
             $status = 'Start';
         }
         return [
-            'id' => $schedule->quiz->id,
+            'id' => $schedule->id,
             'start_at' => $schedule->start,
             'end_at' => $schedule->end,
             'title' => $schedule->quiz->title,
